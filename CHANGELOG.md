@@ -2,6 +2,14 @@
 
 All notable changes to the **DailyMath** project will be documented in this file.
 
+## [Versioning System] - 2025-12-31
+- Added built-in versioning and rollback support via Git.
+- New terminal commands:
+  - `npm run checkpoint -- "your message"`: Creates a save point of the current code.
+  - `npm run history`: Displays the last 10 save points.
+  - `npm run rollback`: Reverts the entire codebase to the previous save point.
+
+
 ## [Unreleased] - 2025-12-27
 
 ### Added

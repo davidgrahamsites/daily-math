@@ -7,7 +7,10 @@
     "dev": "vite",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "checkpoint": "git add . && git commit -m",
+    "history": "git log --oneline -n 10",
+    "rollback": "git reset --hard HEAD~1"
   },
   "dependencies": {
     "clsx": "^2.1.1",
