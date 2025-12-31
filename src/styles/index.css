@@ -1,0 +1,116 @@
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap');
+@import 'katex/dist/katex.min.css';
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  /* Default Theme: COSMIC */
+  --bg-primary: #050505;
+  --bg-secondary: #121212;
+  --bg-card: #1E1E1E;
+  --text-primary: #FFFFFF;
+  /* Pure White for max contrast */
+  --text-secondary: #CCCCCC;
+  /* Light Grey */
+  --accent-primary: #3b82f6;
+  --accent-secondary: #8b5cf6;
+  --accent-glow: rgba(59, 130, 246, 0.5);
+  --success: #10b981;
+  --error: #ef4444;
+  --warning: #f59e0b;
+  --font-main: 'Outfit', sans-serif;
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 20px;
+  /* Dynamic Background */
+  --bg-gradient: radial-gradient(circle at 50% 0%, #0f172a 0%, #000000 100%);
+  /* Slightly lighter center */
+}
+
+[data-theme='light'] {
+  --bg-primary: #f8fafc;
+  --bg-secondary: #ffffff;
+  --bg-card: #ffffff;
+  --text-primary: #0f172a;
+  --text-secondary: #475569;
+  --accent-primary: #2563eb;
+  --accent-secondary: #7c3aed;
+  --accent-glow: rgba(37, 99, 235, 0.2);
+  --bg-gradient: linear-gradient(180deg, #e0e7ff 0%, #f8fafc 100%);
+}
+
+[data-theme='matrix'] {
+  --bg-primary: #000000;
+  --bg-secondary: #0a0a0a;
+  --bg-card: #111111;
+  --text-primary: #00ff41;
+  --text-secondary: #008f11;
+  --accent-primary: #00ff41;
+  --accent-secondary: #003b00;
+  --accent-glow: rgba(0, 255, 65, 0.4);
+  --warning: #00ff41;
+  --error: #ff0000;
+  --bg-gradient: linear-gradient(0deg, #001100 0%, #000000 100%);
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: var(--font-main);
+  background: var(--bg-gradient);
+  background-attachment: fixed;
+  color: var(--text-primary);
+  transition: background 0.3s ease, color 0.3s ease;
+}
+
+button {
+  font-family: inherit;
+  cursor: pointer;
+  border: none;
+  background: none;
+}
+
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
+/* Utilities */
+.glass-panel {
+  background: var(--bg-card);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--text-secondary);
+  border-opacity: 0.1;
+  border-radius: var(--radius-lg);
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+}
+
+.text-gradient {
+  background: linear-gradient(to right, var(--accent-primary), var(--accent-secondary));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.fade-in {
+  animation: fadeIn 0.4s ease-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
