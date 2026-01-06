@@ -4,10 +4,11 @@ import katex from 'katex';
 interface MathRendererProps {
     latex: string;
     displayMode?: boolean;
+    inline?: boolean;
     className?: string; // Allow passing external styles
 }
 
-export const MathRenderer = ({ latex, displayMode = true, className = '' }: MathRendererProps) => {
+export const MathRenderer = ({ latex, displayMode = true, inline = false, className = '' }: MathRendererProps) => {
     const containerRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
@@ -31,7 +32,7 @@ export const MathRenderer = ({ latex, displayMode = true, className = '' }: Math
 
                 katex.render(cleanLatex, containerRef.current, {
                     throwOnError: false,
-                    displayMode: displayMode,
+                    displayMode: inline ? false : displayMode,
                     errorColor: '#ef4444', // Red text on error (standard KaTeX behavior)
                 });
             } catch (e) {

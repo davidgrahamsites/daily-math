@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState } from 'react';
 import { createPortal } from 'react-dom';
 import { Lightbulb, Check, Info, GripHorizontal, ChevronDown, ChevronUp, GraduationCap } from 'lucide-react';
 import { clsx } from 'clsx';
