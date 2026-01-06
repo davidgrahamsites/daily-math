@@ -1,5 +1,6 @@
 import type { Problem } from '../types';
 import { fetchAIProblem } from './aiService';
+import { getStoredApiKey } from '../features/settings/Settings';
 
 const MOCK_PROBLEM: Problem = {
     id: '1',
@@ -30,7 +31,6 @@ const MOCK_PROBLEM: Problem = {
 };
 
 export const getDailyProblem = async (): Promise<Problem> => {
-    const apiKey = import.meta.env.VITE_OPENAI_API_KEY;
     const today = new Date().toISOString().split('T')[0];
     const cacheKey = `daily_math_problem_v9_${today}`;
 
@@ -43,6 +43,12 @@ export const getDailyProblem = async (): Promise<Problem> => {
             console.error('Failed to parse cached problem', e);
             localStorage.removeItem(cacheKey);
         }
+    }
+
+    // Try to get API key from Capacitor storage first, fallback to .env
+    let apiKey = await getStoredApiKey();
+    if (!apiKey) {
+        apiKey = import.meta.env.VITE_OPENAI_API_KEY;
     }
 
     // If API key is present, try to fetch from AI

@@ -1,9 +1,10 @@
 import { useState, useEffect } from 'react';
-import { BarChart3, Loader2, Palette } from 'lucide-react';
+import { BarChart3, Loader2, Palette, Settings as SettingsIcon } from 'lucide-react';
 import { getDailyProblem } from './services/problemService';
 import { type Problem } from './types';
 import { DailyProblemView } from './features/daily-problem/DailyProblemView';
 import { SolverInterface } from './features/daily-problem/SolverInterface';
+import { Settings } from './features/settings/Settings';
 
 type Theme = 'default' | 'light' | 'matrix';
 
@@ -12,6 +13,7 @@ function App() {
   const [loading, setLoading] = useState(true);
   const [isSolving, setIsSolving] = useState(false);
   const [theme, setTheme] = useState<Theme>('default');
+  const [showSettings, setShowSettings] = useState(false);
 
   useEffect(() => {
     // Apply theme
@@ -27,6 +29,18 @@ function App() {
       if (current === 'default') return 'light';
       if (current === 'light') return 'matrix';
       return 'default';
+    });
+  };
+
+  const handleApiKeySaved = () => {
+    // Reload problem with new API key
+    setLoading(true);
+    getDailyProblem().then(data => {
+      setProblem(data);
+      setLoading(false);
+    }).catch(error => {
+      console.error('Failed to reload problem', error);
+      setLoading(false);
     });
   };
 
@@ -59,6 +73,15 @@ function App() {
             title="Switch Theme"
           >
             <Palette size={24} />
+          </button>
+          <button
+            onClick={() => setShowSettings(true)}
+            style={{ color: 'white', backgroundColor: 'rgba(255,255,255,0.1)' }}
+            className="hover:text-blue-400 transition-colors p-2 rounded-full"
+            aria-label="Settings"
+            title="Settings"
+          >
+            <SettingsIcon size={24} />
           </button>
           <button
             style={{ color: 'white', backgroundColor: 'rgba(255,255,255,0.1)' }}
@@ -100,6 +123,12 @@ function App() {
           © {new Date().getFullYear()} DailyMath
         </footer>
       )}
+
+      <Settings
+        isOpen={showSettings}
+        onClose={() => setShowSettings(false)}
+        onApiKeySaved={handleApiKeySaved}
+      />
     </div>
   );
 }
