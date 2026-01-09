@@ -59,8 +59,12 @@ function App() {
   }, []);
 
   return (
-    <div className="w-full max-w-md mx-auto min-h-screen flex flex-col p-4 relative transition-colors duration-300">
-      <header className="flex justify-between items-center py-4 mb-6">
+    <div className="w-full max-w-md mx-auto min-h-screen flex flex-col px-4 pb-safe relative transition-colors duration-300" style={{
+      minHeight: '100dvh', // Dynamic viewport height for mobile
+      paddingTop: 'max(1rem, env(safe-area-inset-top))',
+      paddingBottom: 'max(1rem, env(safe-area-inset-bottom))'
+    }}>
+      <header className="flex justify-between items-center py-4 mb-4 flex-shrink-0">
         <h1 className="text-2xl font-bold tracking-tight text-text-primary">
           Daily<span className="text-gradient">Math</span>
         </h1>
@@ -93,7 +97,7 @@ function App() {
         </div>
       </header>
 
-      <main className="flex-1 flex flex-col gap-6">
+      <main className="flex-1 flex flex-col gap-4 overflow-y-auto min-h-0">
         {loading ? (
           <div className="glass-panel p-6 flex items-center justify-center min-h-[300px]">
             <Loader2 className="animate-spin text-accent-primary" size={32} />
@@ -107,7 +111,10 @@ function App() {
 
               <button
                 onClick={() => setIsSolving(true)}
-                className="w-full py-4 bg-blue-600 text-white font-bold rounded-xl shadow-lg hover:bg-blue-500 transition-colors mt-auto relative z-10 cursor-pointer text-lg"
+                className="w-full py-4 bg-blue-600 text-white font-bold rounded-xl shadow-lg hover:bg-blue-500 active:bg-blue-700 transition-colors mt-auto relative z-10 cursor-pointer text-lg flex-shrink-0"
+                style={{
+                  marginBottom: 'max(1rem, env(safe-area-inset-bottom))'
+                }}
               >
                 Start Solving
               </button>

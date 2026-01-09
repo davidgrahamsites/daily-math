@@ -114,3 +114,25 @@ a {
     transform: translateY(0);
   }
 }
+
+/* Mobile-Specific Styles */
+@media (max-width: 768px) {
+
+  /* Ensure proper spacing on mobile */
+  .glass-panel {
+    padding: 1.25rem;
+  }
+
+  /* Reduce font sizes slightly on small screens */
+  h1 {
+    font-size: 1.5rem;
+  }
+}
+
+/* iOS Safe Area Padding */
+@supports (padding: env(safe-area-inset-top)) {
+  html {
+    padding-top: env(safe-area-inset-top);
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+}

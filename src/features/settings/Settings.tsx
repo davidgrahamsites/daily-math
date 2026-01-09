@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Settings as SettingsIcon, Key, Check, X } from 'lucide-react';
+import { Settings as SettingsIcon, Key, Check, X, Copy } from 'lucide-react';
 import { Preferences } from '@capacitor/preferences';
 
 const API_KEY_STORAGE_KEY = 'openai_api_key';
@@ -15,6 +15,7 @@ export const Settings = ({ isOpen, onClose, onApiKeySaved }: SettingsProps) => {
     const [showKey, setShowKey] = useState(false);
     const [isSaving, setIsSaving] = useState(false);
     const [savedSuccess, setSavedSuccess] = useState(false);
+    const [copied, setCopied] = useState(false);
 
     useEffect(() => {
         if (isOpen) {
@@ -71,6 +72,24 @@ export const Settings = ({ isOpen, onClose, onApiKeySaved }: SettingsProps) => {
         }
     };
 
+    const handleCopy = async () => {
+        try {
+            await navigator.clipboard.writeText(apiKey);
+            setCopied(true);
+            setTimeout(() => setCopied(false), 2000);
+        } catch (error) {
+            // Fallback for iOS
+            const textArea = document.createElement('textarea');
+            textArea.value = apiKey;
+            document.body.appendChild(textArea);
+            textArea.select();
+            document.execCommand('copy');
+            document.body.removeChild(textArea);
+            setCopied(true);
+            setTimeout(() => setCopied(false), 2000);
+        }
+    };
+
     if (!isOpen) return null;
 
     return (
@@ -103,14 +122,25 @@ export const Settings = ({ isOpen, onClose, onApiKeySaved }: SettingsProps) => {
                                 value={apiKey}
                                 onChange={(e) => setApiKey(e.target.value)}
                                 placeholder="sk-..."
-                                className="w-full px-4 py-3 bg-black/20 border border-text-secondary/20 rounded-lg text-text-primary focus:outline-none focus:border-accent-primary transition-colors"
+                                className="w-full px-4 py-3 pr-24 bg-black/20 border border-text-secondary/20 rounded-lg text-text-primary focus:outline-none focus:border-accent-primary transition-colors"
                             />
-                            <button
-                                onClick={() => setShowKey(!showKey)}
-                                className="absolute right-3 top-1/2 -translate-y-1/2 text-text-secondary hover:text-text-primary text-xs"
-                            >
-                                {showKey ? 'Hide' : 'Show'}
-                            </button>
+                            <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-2">
+                                {apiKey && (
+                                    <button
+                                        onClick={handleCopy}
+                                        className="text-text-secondary hover:text-text-primary transition-colors"
+                                        title="Copy API Key"
+                                    >
+                                        {copied ? <Check size={16} className="text-success" /> : <Copy size={16} />}
+                                    </button>
+                                )}
+                                <button
+                                    onClick={() => setShowKey(!showKey)}
+                                    className="text-text-secondary hover:text-text-primary text-xs"
+                                >
+                                    {showKey ? 'Hide' : 'Show'}
+                                </button>
+                            </div>
                         </div>
                         <p className="text-xs text-text-secondary mt-2">
                             Your API key is stored securely on your device and never shared.
