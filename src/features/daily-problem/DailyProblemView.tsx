@@ -1,5 +1,6 @@
 import type { Problem } from '../../types';
 import { MathRenderer } from '../../components/ui/MathRenderer';
+import { InlineMathText } from '../../components/ui/InlineMathText';
 
 interface DailyProblemViewProps {
     problem: Problem;
@@ -14,7 +15,9 @@ export const DailyProblemView = ({ problem }: DailyProblemViewProps) => {
             </div>
 
             <h2 className="text-3xl font-light mb-2 text-text-primary">{problem.title}</h2>
-            <p className="text-text-secondary mb-6 text-lg font-light max-w-lg leading-relaxed">{problem.statement}</p>
+            <p className="text-text-secondary mb-6 text-lg font-light max-w-lg leading-relaxed">
+                <InlineMathText text={problem.statement} />
+            </p>
 
             <div className="py-8 w-full overflow-x-auto flex justify-center">
                 <MathRenderer latex={problem.latex} className="text-3xl md:text-4xl text-text-primary" />
