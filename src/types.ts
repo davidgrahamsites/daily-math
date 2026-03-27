@@ -3,11 +3,16 @@ export interface SolutionStep {
     explanation: string;
 }
 
+export type AnswerType = 'numeric' | 'algebraic' | 'fraction' | 'matrix' | 'symbolic' | 'text';
+
 export interface Problem {
     id: string;
     date: string;
     title: string;
     concept: string;
+    category: string;       // e.g. "Algebra"
+    subcategory: string;    // e.g. "Quadratic Equations"
+    answerType: AnswerType; // Guides which keyboard layout to show
     statement: string; // The English description (e.g. "Find the integral...")
     latex: string; // The pure Math formula
     hints: {
@@ -29,3 +34,4 @@ export interface Problem {
     answer: string; // The numeric or algebraic answer for validation
     verificationFunction?: (input: string) => boolean; // Advanced verification
 }
+

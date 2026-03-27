@@ -11,7 +11,9 @@ export const DailyProblemView = ({ problem }: DailyProblemViewProps) => {
         <div className="glass-panel p-8 flex flex-col items-center justify-center min-h-[300px] text-center w-full animate-in fade-in zoom-in duration-500">
             <div className="w-full flex justify-between items-center mb-6">
                 <span className="text-xs font-bold tracking-widest text-secondary uppercase bg-white/5 px-3 py-1 rounded-full">{problem.date}</span>
-                <span className="text-secondary text-xs uppercase tracking-widest font-semibold">{problem.concept}</span>
+                <span className="text-secondary text-xs uppercase tracking-widest font-semibold">
+                    {problem.category || problem.concept?.split('•')[0]?.trim()} • {problem.subcategory || problem.concept?.split('•')[1]?.trim()}
+                </span>
             </div>
 
             <h2 className="text-3xl font-light mb-2 text-text-primary">{problem.title}</h2>

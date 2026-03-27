@@ -1,5 +1,5 @@
 import type { Problem } from '../types';
-import { fetchAIProblem } from './aiService';
+import { fetchAIProblem, getRandomCategory } from './aiService';
 import { getStoredApiKey } from '../features/settings/Settings';
 
 const MOCK_PROBLEM: Problem = {
@@ -7,6 +7,9 @@ const MOCK_PROBLEM: Problem = {
     date: new Date().toISOString().split('T')[0],
     title: 'Riemann Sum Limit',
     concept: 'Calculus • Definite Integrals',
+    category: 'Calculus',
+    subcategory: 'Integrals',
+    answerType: 'algebraic',
     statement: 'Evaluate the limit of the Riemann sum on the interval [0, 1].',
     latex: '\\lim_{n \\to \\infty} \\sum_{i=1}^{n} \\frac{1}{n} e^{i/n}',
     hints: [
@@ -32,7 +35,7 @@ const MOCK_PROBLEM: Problem = {
 
 export const getDailyProblem = async (): Promise<Problem> => {
     const today = new Date().toISOString().split('T')[0];
-    const cacheKey = `daily_math_problem_v10_${today}`;
+    const cacheKey = `daily_math_problem_v11_${today}`;
 
     // Check Cache First
     const cached = localStorage.getItem(cacheKey);
@@ -51,10 +54,11 @@ export const getDailyProblem = async (): Promise<Problem> => {
         apiKey = import.meta.env.VITE_OPENAI_API_KEY;
     }
 
-    // If API key is present, try to fetch from AI
+    // If API key is present, try to fetch from AI with random category
     if (apiKey && apiKey.length > 10) {
         try {
-            const problem = await fetchAIProblem(apiKey);
+            const { category, subtopic, answerType } = getRandomCategory();
+            const problem = await fetchAIProblem(apiKey, category, subtopic, answerType);
             // Cache the result
             localStorage.setItem(cacheKey, JSON.stringify(problem));
             return problem;
