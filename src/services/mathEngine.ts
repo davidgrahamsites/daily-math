@@ -65,5 +65,12 @@ export const formatInputLatex = (input: string): string => {
         .replace(/∴/g, '\\therefore ')
         .replace(/∵/g, '\\because ')
         .replace(/∅/g, '\\emptyset ')
-        .replace(/→/g, '\\to ');
+        .replace(/→/g, '\\to ')
+        .replace(/∠/g, '\\angle ')
+        .replace(/△/g, '\\triangle ')
+        .replace(/□/g, '\\square ')
+        .replace(/∥/g, '\\parallel ')
+        .replace(/⊥/g, '\\perp ')
+        .replace(/≅/g, '\\cong ')
+        .replace(/°/g, '^{\\circ}');
 }

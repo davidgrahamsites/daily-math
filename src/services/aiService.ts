@@ -38,11 +38,11 @@ export const MATH_CATEGORIES: MathCategory[] = [
     {
         name: 'Geometry',
         subtopics: [
-            { name: 'Area & Perimeter', answerType: 'numeric' },
-            { name: 'Circles', answerType: 'numeric' },
-            { name: 'Triangles & Angles', answerType: 'numeric' },
-            { name: '3D Solids & Volume', answerType: 'numeric' },
-            { name: 'Coordinate Geometry', answerType: 'numeric' },
+            { name: 'Area & Perimeter', answerType: 'geometry' },
+            { name: 'Circles', answerType: 'geometry' },
+            { name: 'Triangles & Angles', answerType: 'geometry' },
+            { name: '3D Solids & Volume', answerType: 'geometry' },
+            { name: 'Coordinate Geometry', answerType: 'geometry' },
         ]
     },
     {
@@ -192,7 +192,7 @@ Output MUST be valid JSON matching this TypeScript interface:
   concept: string; (e.g. "Algebra • Quadratic Equations")
   category: string; (The math branch, e.g. "Algebra")
   subcategory: string; (The specific topic, e.g. "Quadratic Equations")
-  answerType: string; (One of: "numeric", "algebraic", "fraction", "matrix", "symbolic", "text")
+  answerType: string; (One of: "numeric", "algebraic", "fraction", "matrix", "symbolic", "text", "geometry")
   statement: string; (The English description of the problem. PLAIN TEXT ONLY. DO NOT use LaTeX here. Write "integral from a to b" not "\\int_a^b".)
   latex: string; (The pure math formula ONLY. Do NOT include any sentences, words or descriptions here. Example: "\\int x dx")
   hints: { 

@@ -13,7 +13,7 @@ interface ScientificKeyboardProps {
     answerType?: AnswerType;
 }
 
-type KeyboardMode = 'basic' | 'algebra' | 'calc' | 'trig' | 'logic' | 'fraction';
+type KeyboardMode = 'basic' | 'algebra' | 'calc' | 'trig' | 'logic' | 'fraction' | 'geometry';
 
 interface KeyConfig {
     label: string; // What is shown (can be LaTeX)
@@ -77,6 +77,15 @@ const LAYOUTS: Record<KeyboardMode, KeyConfig[][]> = {
         [createKey('.', '.'), createKey('0'), createKey('('), createKey(')')],
         [createKey('\\pi', 'pi', true), createKey('e'), createKey('^'), createKey('+')],
     ],
+    geometry: [
+        [createKey('\\angle', '∠', true), createKey('°', '°'), createKey('\\triangle', '△', true), createKey('\\square', '□', true)],
+        [createKey('\\parallel', '∥', true), createKey('\\perp', '⊥', true), createKey('\\sim', '~', true), createKey('\\cong', '≅', true)],
+        [createKey('7'), createKey('8'), createKey('9'), createKey('\\pi', 'pi', true)],
+        [createKey('4'), createKey('5'), createKey('6'), createKey('\\sqrt{x}', 'sqrt(', true)],
+        [createKey('1'), createKey('2'), createKey('3'), createKey('^')],
+        [createKey('.', '.'), createKey('0'), createKey('('), createKey(')')],
+        [createKey('+'), createKey('-'), createKey('×', '*'), createKey('÷', '/')],
+    ],
 };
 
 // Map answerType to the best default keyboard mode
@@ -87,6 +96,7 @@ const ANSWER_TYPE_TO_MODE: Record<AnswerType, KeyboardMode> = {
     matrix: 'basic',     // Matrix gets basic for now
     symbolic: 'logic',
     text: 'basic',       // Text problems use free-text input (handled in SolverInterface)
+    geometry: 'geometry',
 };
 
 // Available modes per answerType (for manual switching)
@@ -97,6 +107,7 @@ const AVAILABLE_MODES: Record<AnswerType, KeyboardMode[]> = {
     matrix: ['basic', 'algebra'],
     symbolic: ['logic', 'algebra'],
     text: ['basic'],
+    geometry: ['geometry', 'basic', 'trig'],
 };
 
 const KeyButton = ({ k, onClick }: { k: KeyConfig, onClick: () => void }) => {
@@ -126,6 +137,7 @@ const MODE_LABELS: Record<KeyboardMode, string> = {
     trig: 'TRIG',
     logic: 'LOGIC',
     fraction: 'FRAC',
+    geometry: 'GEO',
 };
 
 export const ScientificKeyboard = ({ onKeyPress, onClear, onDelete, onSubmit, answerType = 'numeric' }: ScientificKeyboardProps) => {

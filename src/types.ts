@@ -3,7 +3,7 @@ export interface SolutionStep {
     explanation: string;
 }
 
-export type AnswerType = 'numeric' | 'algebraic' | 'fraction' | 'matrix' | 'symbolic' | 'text';
+export type AnswerType = 'numeric' | 'algebraic' | 'fraction' | 'matrix' | 'symbolic' | 'text' | 'geometry';
 
 export interface Problem {
     id: string;
