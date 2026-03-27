@@ -1,13 +1,22 @@
 import { evaluate } from 'mathjs';
 
 export const validateAnswer = (userInput: string, correctAnswer: string): boolean => {
+    // First try: exact string match (normalized)
+    const normalizeStr = (s: string) => s.trim().toLowerCase()
+        .replace(/\s+/g, '')
+        .replace(/×/g, '*')
+        .replace(/÷/g, '/')
+        .replace(/π/g, 'pi');
+
+    if (normalizeStr(userInput) === normalizeStr(correctAnswer)) {
+        return true;
+    }
+
     try {
-        // Basic numerical comparison using mathjs evaluate
-        // This allows expressions like "e-1" to be compared with "1.718..." etc.
+        // Second try: numerical comparison using mathjs
         const userVal = evaluate(userInput);
         const correctVal = evaluate(correctAnswer);
 
-        // Check if undefined or null
         if (userVal === undefined || correctVal === undefined) return false;
 
         // Tolerance for floating point

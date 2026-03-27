@@ -1,46 +1,66 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { clsx } from 'clsx';
 import { Delete } from 'lucide-react';
 import 'katex/dist/katex.min.css';
 import katex from 'katex';
+import type { AnswerType } from '../../types';
 
 interface ScientificKeyboardProps {
     onKeyPress: (key: string) => void;
     onClear: () => void;
     onDelete: () => void;
     onSubmit: () => void;
+    answerType?: AnswerType;
 }
 
-type KeyboardMode = 'basic' | 'calc' | 'logic';
+type KeyboardMode = 'basic' | 'algebra' | 'calc' | 'trig' | 'logic' | 'fraction';
 
 interface KeyConfig {
     label: string; // What is shown (can be LaTeX)
     value: string; // What is typed
     isLatex?: boolean;
+    span?: number; // Grid column span
 }
 
-const createKey = (label: string, value?: string, isLatex = false): KeyConfig => ({
+const createKey = (label: string, value?: string, isLatex = false, span = 1): KeyConfig => ({
     label,
     value: value ?? label,
-    isLatex
+    isLatex,
+    span
 });
 
 const LAYOUTS: Record<KeyboardMode, KeyConfig[][]> = {
     basic: [
-        [createKey('\\sin', 'sin(', true), createKey('\\cos', 'cos(', true), createKey('\\tan', 'tan(', true), createKey('\\pi', 'pi', true)],
-        [createKey('\\ln', 'ln(', true), createKey('e', 'e', true), createKey('(', '('), createKey(')', ')')],
         [createKey('7'), createKey('8'), createKey('9'), createKey('÷', '/')],
         [createKey('4'), createKey('5'), createKey('6'), createKey('×', '*')],
         [createKey('1'), createKey('2'), createKey('3'), createKey('-')],
         [createKey('.', '.'), createKey('0'), createKey('^'), createKey('+')],
+        [createKey('('), createKey(')'), createKey('\\pi', 'pi', true), createKey('e')],
+    ],
+    algebra: [
+        [createKey('x'), createKey('y'), createKey('z'), createKey('n')],
+        [createKey('7'), createKey('8'), createKey('9'), createKey('^')],
+        [createKey('4'), createKey('5'), createKey('6'), createKey('\\sqrt{x}', 'sqrt(', true)],
+        [createKey('1'), createKey('2'), createKey('3'), createKey('\\pm', '±', true)],
+        [createKey('.', '.'), createKey('0'), createKey('('), createKey(')')],
+        [createKey('+'), createKey('-'), createKey('×', '*'), createKey('÷', '/')],
     ],
     calc: [
         [createKey('\\int', '∫', true), createKey('\\frac{d}{dx}', 'd/dx', true), createKey('\\lim', 'lim', true), createKey('\\sum', '∑', true)],
-        [createKey('\\prod', '∏', true), createKey('\\infty', '∞', true), createKey('dt', 'dt'), createKey('dx', 'dx')],
-        [createKey('x'), createKey('y'), createKey('n'), createKey('\\theta', 'theta', true)],
-        [createKey('\\sqrt{x}', 'sqrt(', true), createKey('|x|', 'abs(', true), createKey('!', '!'), createKey('\\log', 'log(', true)],
-        [createKey('1'), createKey('2'), createKey('3'), createKey('=')],
-        [createKey('0'), createKey('.', '.'), createKey(','), createKey('\\to', '→', true)],
+        [createKey('\\infty', '∞', true), createKey('dx', 'dx'), createKey('dt', 'dt'), createKey('\\to', '→', true)],
+        [createKey('x'), createKey('y'), createKey('n'), createKey('e')],
+        [createKey('7'), createKey('8'), createKey('9'), createKey('^')],
+        [createKey('4'), createKey('5'), createKey('6'), createKey('\\sqrt{x}', 'sqrt(', true)],
+        [createKey('1'), createKey('2'), createKey('3'), createKey('\\pi', 'pi', true)],
+        [createKey('.', '.'), createKey('0'), createKey('+'), createKey('-')],
+    ],
+    trig: [
+        [createKey('\\sin', 'sin(', true), createKey('\\cos', 'cos(', true), createKey('\\tan', 'tan(', true), createKey('\\pi', 'pi', true)],
+        [createKey('\\sin^{-1}', 'asin(', true), createKey('\\cos^{-1}', 'acos(', true), createKey('\\tan^{-1}', 'atan(', true), createKey('\\theta', 'theta', true)],
+        [createKey('7'), createKey('8'), createKey('9'), createKey('^')],
+        [createKey('4'), createKey('5'), createKey('6'), createKey('\\sqrt{x}', 'sqrt(', true)],
+        [createKey('1'), createKey('2'), createKey('3'), createKey('÷', '/')],
+        [createKey('.', '.'), createKey('0'), createKey('('), createKey(')')],
     ],
     logic: [
         [createKey('\\forall', '∀', true), createKey('\\exists', '∃', true), createKey('\\in', '∈', true), createKey('\\notin', '∉', true)],
@@ -49,11 +69,37 @@ const LAYOUTS: Record<KeyboardMode, KeyConfig[][]> = {
         [createKey('\\iff', '⇔', true), createKey('\\therefore', '∴', true), createKey('\\because', '∵', true), createKey('\\emptyset', '∅', true)],
         [createKey('P'), createKey('Q'), createKey('R'), createKey('S')],
         [createKey('('), createKey(')'), createKey('{'), createKey('}')],
-    ]
+    ],
+    fraction: [
+        [createKey('7'), createKey('8'), createKey('9'), createKey('\\frac{a}{b}', '/', true)],
+        [createKey('4'), createKey('5'), createKey('6'), createKey('×', '*')],
+        [createKey('1'), createKey('2'), createKey('3'), createKey('-')],
+        [createKey('.', '.'), createKey('0'), createKey('('), createKey(')')],
+        [createKey('\\pi', 'pi', true), createKey('e'), createKey('^'), createKey('+')],
+    ],
+};
+
+// Map answerType to the best default keyboard mode
+const ANSWER_TYPE_TO_MODE: Record<AnswerType, KeyboardMode> = {
+    numeric: 'basic',
+    algebraic: 'algebra',
+    fraction: 'fraction',
+    matrix: 'basic',     // Matrix gets basic for now
+    symbolic: 'logic',
+    text: 'basic',       // Text problems use free-text input (handled in SolverInterface)
+};
+
+// Available modes per answerType (for manual switching)
+const AVAILABLE_MODES: Record<AnswerType, KeyboardMode[]> = {
+    numeric: ['basic', 'trig', 'calc'],
+    algebraic: ['algebra', 'calc', 'trig'],
+    fraction: ['fraction', 'basic', 'algebra'],
+    matrix: ['basic', 'algebra'],
+    symbolic: ['logic', 'algebra'],
+    text: ['basic'],
 };
 
 const KeyButton = ({ k, onClick }: { k: KeyConfig, onClick: () => void }) => {
-    // Render label using Katex if flag is true, otherwise plain text
     const content = k.isLatex
         ? <span dangerouslySetInnerHTML={{ __html: katex.renderToString(k.label, { throwOnError: false }) }} />
         : k.label;
@@ -63,8 +109,8 @@ const KeyButton = ({ k, onClick }: { k: KeyConfig, onClick: () => void }) => {
             onClick={onClick}
             className={clsx(
                 "h-12 rounded-lg text-lg font-medium transition-all active:scale-95 flex items-center justify-center",
-                // Styling based on row/type (roughly inferred)
-                "bg-white/10 text-white hover:bg-white/20 border border-white/5 shadow-sm"
+                "bg-white/10 text-white hover:bg-white/20 border border-white/5 shadow-sm",
+                k.span && k.span > 1 && `col-span-${k.span}`
             )}
         >
             {content}
@@ -72,8 +118,25 @@ const KeyButton = ({ k, onClick }: { k: KeyConfig, onClick: () => void }) => {
     );
 }
 
-export const ScientificKeyboard = ({ onKeyPress, onClear, onDelete, onSubmit }: ScientificKeyboardProps) => {
-    const [mode, setMode] = useState<KeyboardMode>('basic');
+// Friendly mode labels for the UI
+const MODE_LABELS: Record<KeyboardMode, string> = {
+    basic: 'NUM',
+    algebra: 'ALG',
+    calc: 'CALC',
+    trig: 'TRIG',
+    logic: 'LOGIC',
+    fraction: 'FRAC',
+};
+
+export const ScientificKeyboard = ({ onKeyPress, onClear, onDelete, onSubmit, answerType = 'numeric' }: ScientificKeyboardProps) => {
+    const defaultMode = ANSWER_TYPE_TO_MODE[answerType] || 'basic';
+    const [mode, setMode] = useState<KeyboardMode>(defaultMode);
+    const availableModes = AVAILABLE_MODES[answerType] || ['basic', 'algebra', 'calc'];
+
+    // Auto-switch mode when answerType changes
+    useEffect(() => {
+        setMode(ANSWER_TYPE_TO_MODE[answerType] || 'basic');
+    }, [answerType]);
 
     return (
         <div className="w-[100vw] -ml-4 -mb-4 bg-bg-card border-t border-white/10 pb-8 pt-2">
@@ -91,9 +154,9 @@ export const ScientificKeyboard = ({ onKeyPress, onClear, onDelete, onSubmit }: 
                     </button>
                 </div>
 
-                {/* Mode Switcher */}
+                {/* Mode Switcher - now adaptive */}
                 <div className="flex gap-1 mb-2 px-1 bg-black/20 p-1 rounded-lg">
-                    {(['basic', 'calc', 'logic'] as const).map((m) => (
+                    {availableModes.map((m) => (
                         <button
                             key={m}
                             onClick={() => setMode(m)}
@@ -104,7 +167,7 @@ export const ScientificKeyboard = ({ onKeyPress, onClear, onDelete, onSubmit }: 
                                     : "text-text-secondary hover:text-white"
                             )}
                         >
-                            {m}
+                            {MODE_LABELS[m]}
                         </button>
                     ))}
                 </div>
@@ -113,7 +176,7 @@ export const ScientificKeyboard = ({ onKeyPress, onClear, onDelete, onSubmit }: 
                     {LAYOUTS[mode].map((row, i) => (
                         row.map((btn, j) => (
                             <KeyButton
-                                key={`${i}-${j}`}
+                                key={`${mode}-${i}-${j}`}
                                 k={btn}
                                 onClick={() => onKeyPress(btn.value)}
                             />

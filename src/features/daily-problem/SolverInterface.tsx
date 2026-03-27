@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { ArrowLeft, CheckCircle2, Lightbulb } from 'lucide-react';
 import type { Problem } from '../../types';
 import { MathRenderer } from '../../components/ui/MathRenderer';
+import { InlineMathText } from '../../components/ui/InlineMathText';
 import { ScientificKeyboard } from '../calculator/ScientificKeyboard';
 import { validateAnswer, formatInputLatex } from '../../services/mathEngine';
 import { HintOverlay } from '../hints/HintOverlay';
@@ -65,10 +66,11 @@ export const SolverInterface = ({ problem, onBack }: SolverInterfaceProps) => {
             </div>
 
             {/* Problem Context (Collapsed view) */}
-            {/* Problem Context (Collapsed view) */}
             <div className="mb-6 opacity-80 scale-90 origin-top text-center max-w-lg mx-auto">
                 <h3 className="text-xl font-light text-white mb-2">{problem.title}</h3>
-                <p className="text-white/70 text-sm mb-3 line-clamp-3">{problem.statement}</p>
+                <p className="text-white/70 text-sm mb-3 line-clamp-3">
+                    <InlineMathText text={problem.statement} />
+                </p>
                 <MathRenderer latex={problem.latex} className="text-2xl text-blue-200" />
             </div>
 
@@ -101,14 +103,32 @@ export const SolverInterface = ({ problem, onBack }: SolverInterfaceProps) => {
                 )}
             </div>
 
-            {/* Keyboard */}
+            {/* Keyboard - adaptive based on answer type */}
             <div className="mt-auto">
-                <ScientificKeyboard
-                    onKeyPress={handleKeyPress}
-                    onClear={handleClear}
-                    onDelete={handleDelete}
-                    onSubmit={handleSubmit}
-                />
+                {problem.answerType === 'text' ? (
+                    <div className="w-[100vw] -ml-4 -mb-4 bg-bg-card border-t border-white/10 pb-8 pt-4">
+                        <div className="max-w-md mx-auto px-4">
+                            <textarea
+                                value={input}
+                                onChange={(e) => { setFeedback('idle'); setInput(e.target.value); }}
+                                placeholder="Type your answer or proof..."
+                                className="w-full h-24 px-4 py-3 bg-black/20 border border-white/10 rounded-lg text-white focus:outline-none focus:border-accent-primary resize-none"
+                            />
+                            <div className="flex gap-2 mt-2">
+                                <button onClick={handleClear} className="h-10 px-4 rounded-lg bg-error/20 text-error font-bold text-sm flex-1">Clear</button>
+                                <button onClick={handleSubmit} className="h-10 px-6 rounded-lg bg-accent-primary text-white font-bold text-sm flex-[2] shadow-lg shadow-blue-500/20">Submit</button>
+                            </div>
+                        </div>
+                    </div>
+                ) : (
+                    <ScientificKeyboard
+                        onKeyPress={handleKeyPress}
+                        onClear={handleClear}
+                        onDelete={handleDelete}
+                        onSubmit={handleSubmit}
+                        answerType={problem.answerType}
+                    />
+                )}
             </div>
 
             <HintOverlay
