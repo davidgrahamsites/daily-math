@@ -35,7 +35,7 @@ const MOCK_PROBLEM: Problem = {
 
 export const getDailyProblem = async (): Promise<Problem> => {
     const today = new Date().toISOString().split('T')[0];
-    const cacheKey = `daily_math_problem_v12_${today}`;
+    const cacheKey = `daily_math_problem_v13_${today}`;
 
     // Check Cache First
     const cached = localStorage.getItem(cacheKey);

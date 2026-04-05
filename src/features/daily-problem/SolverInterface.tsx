@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { ArrowLeft, CheckCircle2, Lightbulb } from 'lucide-react';
 import type { Problem } from '../../types';
 import { MathRenderer } from '../../components/ui/MathRenderer';
-import { InlineMathText } from '../../components/ui/InlineMathText';
+
 import { ScientificKeyboard } from '../calculator/ScientificKeyboard';
 import { validateAnswer, formatInputLatex } from '../../services/mathEngine';
 import { HintOverlay } from '../hints/HintOverlay';
@@ -69,7 +69,7 @@ export const SolverInterface = ({ problem, onBack }: SolverInterfaceProps) => {
             <div className="mb-6 opacity-80 scale-90 origin-top text-center max-w-lg mx-auto">
                 <h3 className="text-xl font-light text-white mb-2">{problem.title}</h3>
                 <p className="text-white/70 text-sm mb-3 line-clamp-3">
-                    <InlineMathText text={problem.statement} />
+                    {problem.statement}
                 </p>
                 <MathRenderer latex={problem.latex} className="text-2xl text-blue-200" />
             </div>

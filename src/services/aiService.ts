@@ -193,7 +193,7 @@ Output MUST be valid JSON matching this TypeScript interface:
   category: string; (The math branch, e.g. "Algebra")
   subcategory: string; (The specific topic, e.g. "Quadratic Equations")
   answerType: string; (One of: "numeric", "algebraic", "fraction", "matrix", "symbolic", "text", "geometry")
-  statement: string; (The English description of the problem. ABSOLUTELY NO LaTeX, NO backslashes, NO dollar signs, NO percent signs with backslashes. Write numbers and symbols as plain text. Write "$250" as "250 dollars". Write "20%" as "20 percent" or just "20%". Write "x squared" not "x^2". This field is rendered as PLAIN TEXT.)
+  statement: string; (The English description of the problem. PLAIN TEXT ONLY. Use normal symbols like $ and %. Do NOT use LaTeX commands or delimiters. Write "$250" not "\\$250". Write "20%" not "20\\%". No backslashes at all.)
   latex: string; (The pure math formula ONLY. Do NOT include any sentences, words or descriptions here. Example: "\\int x dx")
   hints: { 
       text: string; 
@@ -262,22 +262,24 @@ Make it engaging and educational. The problem should be specifically about ${sel
         // Ensure ID and Date are set if AI forgets
         const today = new Date().toISOString().split('T')[0];
 
-        // Clean the statement of ALL LaTeX artifacts which AI sometimes adds
+        // Clean the statement of ALL LaTeX artifacts the AI sometimes adds
         const cleanStatement = (problem.statement || problem.title)
+            // \$ → $  (LaTeX-escaped dollar sign → real dollar sign)
+            .replace(/\\\$/g, '$')
+            // \% → %  (LaTeX-escaped percent → real percent)
+            .replace(/\\%/g, '%')
             // Remove \( and \) delimiters
             .replace(/\\\(/g, '')
             .replace(/\\\)/g, '')
-            // Remove $...$ inline math delimiters (but keep content)
-            .replace(/\$(.*?)\$/g, '$1')
-            // Remove lone $ signs (like \$250 → 250)
-            .replace(/\\?\$/g, '')
-            // Remove \% → %
-            .replace(/\\%/g, '%')
+            // Remove $...$ inline math wrappers but keep content
+            .replace(/\$([^$]+)\$/g, '$1')
             // Remove \text{...} wrappers, keep content
             .replace(/\\text\{([^}]*)\}/g, '$1')
-            // Remove remaining backslash commands (\frac, \sqrt, etc.)
+            // Remove remaining LaTeX commands (\frac, \sqrt etc.)
             .replace(/\\[a-zA-Z]+/g, '')
-            // Clean up extra spaces
+            // Remove leftover braces from LaTeX
+            .replace(/[{}]/g, '')
+            // Clean up multiple spaces
             .replace(/\s{2,}/g, ' ')
             .trim();
 
