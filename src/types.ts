@@ -35,3 +35,13 @@ export interface Problem {
     verificationFunction?: (input: string) => boolean; // Advanced verification
 }
 
+export interface DailySolveRecord {
+    date: string;       // YYYY-MM-DD
+    solved: boolean;
+    hintsUsed: number;
+    usedSolution: boolean;
+    category: string;
+    subcategory: string;
+}
+
+

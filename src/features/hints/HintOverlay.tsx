@@ -109,6 +109,8 @@ export const HintOverlay = ({ hints, solutionSteps, isOpen, onClose }: HintOverl
     const [isCollapsed, setIsCollapsed] = useState(false);
     const [showEducation, setShowEducation] = useState(false);
     const controls = useDragControls();
+    // Center the window on open by starting at 0,0 relative to the flex-centered container
+    const [position] = useState({ x: 0, y: 0 });
 
     // Collect all definitions with deepDive content
     const allDefinitions = hints.flatMap(h => h.definitions || []).filter(d => Boolean(d.deepDive));
@@ -132,8 +134,14 @@ export const HintOverlay = ({ hints, solutionSteps, isOpen, onClose }: HintOverl
                 dragListener={false}
                 dragControls={controls}
                 dragMomentum={false}
-                initial={{ scale: 0.95, opacity: 0 }}
-                animate={{ scale: 1, opacity: 1, height: isCollapsed ? 'auto' : 'auto' }}
+                dragConstraints={{
+                    top: -300,
+                    bottom: 300,
+                    left: -150,
+                    right: 150,
+                }}
+                initial={{ scale: 0.95, opacity: 0, x: position.x, y: position.y }}
+                animate={{ scale: 1, opacity: 1 }}
                 // Use 'resize' CSS property + 'overflow-hidden' for container, but 'overflow-auto' for content
                 className={clsx(
                     "pointer-events-auto flex flex-col bg-bg-card border border-text-secondary/20 rounded-2xl shadow-2xl overflow-hidden min-w-[320px]",
